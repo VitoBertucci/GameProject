@@ -8,7 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class TileMap extends Pane {
-    private static int size = 15; //length of one side of rectangle tile (i.e. h x w)
+    private static int size = 25; //length of one side of rectangle tile (i.e. h x w)
     private List<List<Tile>> list = new ArrayList<List<Tile>>(); //list used to store all tiles to access later
     
     
@@ -17,7 +17,7 @@ public class TileMap extends Pane {
         boolean clicked = false; //store if tile has been clicked yet
         
         //constructor
-        Tile(double x, double y) {
+        Tile(double x, double y, Color col) {
             
             //set size of tile with global size up top
             setWidth(size);
@@ -28,7 +28,7 @@ public class TileMap extends Pane {
             setY(y);
             
             //set initial colors of tile
-            setFill(Color.BEIGE);
+            setFill(col);
             setStrokeWidth(1);
             setStroke(Color.BLACK);
             
@@ -39,7 +39,7 @@ public class TileMap extends Pane {
                     clicked = true;
                     
                 } else {
-                    setFill(Color.BEIGE);
+                    setFill(col);
                     clicked = false;
                 }
                 
@@ -53,7 +53,7 @@ public class TileMap extends Pane {
             });
             setOnMouseExited(e -> {
                 if(clicked == false) {
-                    setFill(Color.BEIGE);
+                    setFill(col);
                 } else {
                     setFill(Color.RED);
                 }
@@ -62,7 +62,7 @@ public class TileMap extends Pane {
     }
     
     //take in mapSize to determine length of square map
-    public TileMap(int mapSize) {
+    public TileMap(int mapSize, Color col) {
         
         //nested for loop to create and display each tile
         for(int x = 0; x < mapSize; x++) {
@@ -71,7 +71,7 @@ public class TileMap extends Pane {
             for(int y = 0; y < mapSize; y++) {
                 int xCoord = x * size; //create pixel coordinate of x
                 int yCoord = y * size; //create pixel coordinate of y
-                Tile tile = new Tile(xCoord, yCoord); //create new tile in that spot
+                Tile tile = new Tile(xCoord, yCoord, col); //create new tile in that spot
                 tmp.add(y, tile); //add tile to list to access later
                 tile.getProperties().put("x", x); //put the x coordinate in the tile's properties
                 tile.getProperties().put("y", y); //put the y coordinate in the tile's properties
