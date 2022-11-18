@@ -1,5 +1,9 @@
 package com.example;
 import java.io.IOException;
+import java.util.HashMap;
+
+import com.example.TileMap.Tile;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -7,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
@@ -16,9 +21,7 @@ public class PrimaryController {
     @FXML
     private Button resetButton;
     @FXML 
-    private HBox topMaps;
-    @FXML 
-    private HBox bottomMaps;
+    private Pane mapBox;
     @FXML
     private VBox box;
     @FXML 
@@ -34,6 +37,8 @@ public class PrimaryController {
     @FXML
     ChoiceBox<Integer> playerCountChoice = new ChoiceBox<Integer>();
     
+    private HashMap<Integer, TileMap> playerMaps = new HashMap<Integer, TileMap>();
+    private HashMap<Integer, Color> playerColors = new HashMap<Integer, Color>();
     
     
     boolean gameStarted; //track game state
@@ -41,12 +46,13 @@ public class PrimaryController {
     private int turn; //track turn value
     private int pc; //track player count selection
     
-    
+    //create new maps with size and color
     public TileMap createNewMap(int size, Color col) {
         TileMap map = new TileMap(size, col);
         return map;
     }
     
+    //reset game functionality
     public void resetGame() {
         gameStarted = false;
         round = 0;
@@ -55,8 +61,7 @@ public class PrimaryController {
         playerCountChoice.getItems().clear();
         playerCountChoice.getItems().addAll(1,2,3,4);
         playerCountChoice.hide();
-        topMaps.getChildren().clear();
-        bottomMaps.getChildren().clear();
+        mapBox.getChildren().clear();
         playerTurn.setText(String.valueOf(turn));
         roundCount.setText(String.valueOf(round));
         playerCount.setText(null);
@@ -67,6 +72,10 @@ public class PrimaryController {
     
     @FXML
     public void initialize() throws Exception {
+        playerColors.put(1, Color.BLUE);
+        playerColors.put(2, Color.GREEN);
+        playerColors.put(3, Color.PURPLE);
+        playerColors.put(4, Color.ORANGE);
         resetGame();
     }
     
@@ -79,30 +88,36 @@ public class PrimaryController {
             turn = 1;
             round = 1;
             pc = (int) playerCountChoice.getValue();
-            for(int i = 1; i <= pc; i++) {
-                if(i <= 2) {
-                    topMaps.getChildren().add(createNewMap(4, Color.GREEN));
-                } else {
-                    bottomMaps.getChildren().add(createNewMap(4, Color.BLUE));
-                }
-            }
+            TileMap mainMap = new TileMap(10, Color.BEIGE);
+            mainMap.setEditable(true);
+            mapBox.getChildren().add(mainMap);
             playerTurn.setText(String.valueOf(turn));
             roundCount.setText(String.valueOf(round));
             playerCount.setText(String.valueOf(pc));
             startButton.setVisible(false);
             textBox.setText("Game has started. It is now player " + String.valueOf(turn) + "'s turn");
+            playerMaps.get(turn).setEditable(true);
         }
     }
     
     @FXML 
-    private void resetButtonPress() throws Exception{
+    private void resetButtonPress() throws Exception {
         resetGame();
     }
 
-    @FXML 
+    @FXML
     private void finishTurnButtonPress() throws IOException{
+        playerMaps.get(turn).setEditable(false);
         if(gameStarted == true) {
-            if (turn == pc){
+            if (turn == pc) {
+                textBox.clear();
+                for(Integer i : playerMaps.keySet()) {
+                    textBox.appendText("Player " + i + "'s tiles: ");
+                    for(Tile t : playerMaps.get(i).getSelectedTiles()) {
+                        textBox.appendText(playerMaps.get(i).getTileCoordinates(t));
+                    }
+                    textBox.appendText("\n");
+                }
                 round++;
                 turn = 1;
             } else {
@@ -110,7 +125,8 @@ public class PrimaryController {
             }
             playerTurn.setText(String.valueOf(turn));
             roundCount.setText(String.valueOf(round));
-            textBox.setText("It is now player " + String.valueOf(turn) + "'s turn");
+            textBox.appendText("\nIt is now player " + String.valueOf(turn) + "'s turn");
+            playerMaps.get(turn).setEditable(true);
         }
     }
 }

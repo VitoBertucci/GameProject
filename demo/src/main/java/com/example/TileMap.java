@@ -1,7 +1,6 @@
 package com.example;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -9,16 +8,15 @@ import javafx.scene.shape.Rectangle;
 
 public class TileMap extends Pane {
     private static int size = 25; //length of one side of rectangle tile (i.e. h x w)
-    private List<List<Tile>> list = new ArrayList<List<Tile>>(); //list used to store all tiles to access later
-    
-    
+    private List<List<Tile>> tileList = new ArrayList<List<Tile>>(); //list used to store all tiles to access later
+    List<Tile> selectedTiles = new ArrayList<Tile>();
+    private boolean editable = false;
     //Tile class
     public class Tile extends Rectangle {
-        boolean clicked = false; //store if tile has been clicked yet
-        
+    public boolean selected = false; //store if tile has been clicked yet
+       
         //constructor
         Tile(double x, double y, Color col) {
-            
             //set size of tile with global size up top
             setWidth(size);
             setHeight(size);
@@ -34,28 +32,50 @@ public class TileMap extends Pane {
             
             //when tile is clicked, change to red, when clicked again change to beige
             setOnMouseClicked(e -> {
-                if(clicked == false) {
-                    setFill(Color.RED);
-                    clicked = true;
-                    
-                } else {
-                    setFill(col);
-                    clicked = false;
+                if(editable == true) {
+                    if(selected == false) {
+                        setFill(Color.RED);
+                        selected = true;
+                        selectedTiles.add(this);
+                        
+                        
+                        
+                        // int xc = this.getProperties().get("x");
+                        // int yc = this.getProperties().get("y");
+                        
+                        fillNeighbors(this, Color.BLUE);
+                        // getTile(xc, yc);
+                        // getTile(xc, yc);
+                        // getTile(xc, yc);
+                        // getTile(xc, yc);
+                        
+                        // tileList.get(xc - 1).get(yc);
+                        // tileList.get(xc + 1).get(yc);
+                        // tileList.get(xc).get(yc - 1);
+                        // tileList.get(xc).get(yc + 1);
+                        
+                    } else {
+                        setFill(col);
+                        selected = false;
+                        selectedTiles.remove(this);
+                        fillNeighbors(this,col);
+                    }
                 }
-                
-                //diplay coordinates of tile in terminal
-                System.out.println(getTileAtCoordinates((int)getProperties().get("x"), (int)getProperties().get("y")));
             });
             
             //set mouse entered and exited for the hover over effect
             setOnMouseEntered(e -> {
-                setFill(Color.PINK);
+                if(editable == true) {
+                    setFill(Color.PINK);
+                }
             });
             setOnMouseExited(e -> {
-                if(clicked == false) {
-                    setFill(col);
-                } else {
-                    setFill(Color.RED);
+                if(editable == true) {
+                    if(selected == false) {
+                        setFill(col);
+                    } else {
+                        setFill(Color.RED);
+                    }
                 }
             });
         }
@@ -67,7 +87,7 @@ public class TileMap extends Pane {
         //nested for loop to create and display each tile
         for(int x = 0; x < mapSize; x++) {
             List<Tile> tmp = new ArrayList<Tile>();
-            list.add(x,tmp);
+            tileList.add(x,tmp);
             for(int y = 0; y < mapSize; y++) {
                 int xCoord = x * size; //create pixel coordinate of x
                 int yCoord = y * size; //create pixel coordinate of y
@@ -80,8 +100,53 @@ public class TileMap extends Pane {
         }
     }
     
-    //
-    public String getTileAtCoordinates(int x, int y) {
-        return (list.get(x).get(y).getProperties().get("x") + " " + list.get(x).get(y).getProperties().get("y"));
+    public String getTileCoordinates(Tile t) {
+        return ("(" + t.getProperties().get("x") + "," + t.getProperties().get("y") + ")");
+    }
+    
+    public List<Tile> getSelectedTiles() {
+        return selectedTiles;
+    }
+    
+    public void setEditable(boolean b) {
+        editable = b;
+    }
+    
+    public Tile getTile(int x, int y) {
+        return tileList.get(x).get(y);
+    }
+
+    public void fillNeighbors(Tile t, Color col) {
+        int xc = (int) t.getProperties().get("x");
+        int yc = (int) t.getProperties().get("y");
+        
+        if((xc - 1) >= 0) {
+           tileList.get(xc - 1).get(yc).setFill(col);
+        }
+        if((xc + 1) < tileList.size() - 1) {
+           tileList.get(xc + 1).get(yc).setFill(col);
+        }
+        if((yc - 1) >= 0) {
+           tileList.get(xc).get(yc - 1).setFill(col);
+        }
+        if((yc + 1) < tileList.size() - 1) {
+           tileList.get(xc).get(yc + 1).setFill(col);
+        }
+
+        /*
+        if((xc -1) >= 0) {
+            neighbors.add(tileList.get((int)getProperties().get("x") - 1).get(yc));
+        }
+        if((xc + 1) < tileList.size()-1) {
+            neighbors.add(tileList.get((int)getProperties().get("x") + 1).get(yc));
+        }
+        if((yc - 1) >= 0) {
+            neighbors.add(tileList.get((int)getProperties().get("x")).get((int)getProperties().get("y") - 1));
+        }
+        if((yc + 1) < tileList.get((int)getProperties().get("x")).size()-1) {
+            neighbors.add(tileList.get((int)getProperties().get("x")).get((int)getProperties().get("y") + 1));
+        }
+        return neighbors;
+        */
     }
 }
