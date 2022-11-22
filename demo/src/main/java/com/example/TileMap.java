@@ -88,11 +88,7 @@ public class TileMap extends Pane {
         editable = b;
     }
     
-    
-    public Tile getTile(int x, int y) {
-        return tileList.get(x).get(y);
-    }
-
+    //fill neighbors of a tile with secondary color only if they are in bounds of map
     public void fillNeighbors(Tile t) {
         for(int i=-1; i<=1; i++) {
             if(((int)t.getProperties().get("x"))+i >= 0 && ((int)t.getProperties().get("x"))+i <= tileList.size()-1) {

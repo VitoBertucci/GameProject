@@ -55,11 +55,15 @@ public class PrimaryController {
         gameStarted = false;
         round = 0;
         turn = 0;
+        
         startButton.setVisible(true);
         playerCountChoice.getItems().clear();
         playerCountChoice.getItems().addAll(1,2,3,4);
         playerCountChoice.hide();
         mapBox.getChildren().clear();
+        for(List l : playerTiles.values()) {
+            l.clear();
+        }
         playerTurn.setText(String.valueOf(turn));
         roundCount.setText(String.valueOf(round));
         playerCount.setText(null);
@@ -76,16 +80,19 @@ public class PrimaryController {
     @FXML
     public void initialize() throws Exception {
         
+        //each player gets a list for their owned tiles
         playerTiles.put(1, new ArrayList<Tile>());
         playerTiles.put(2, new ArrayList<Tile>());
         playerTiles.put(3, new ArrayList<Tile>());
         playerTiles.put(4, new ArrayList<Tile>());
         
+        //each player gets a primary color for owned tiles
         playerColors.put(1, Color.BLUE);
         playerColors.put(2, Color.GREEN);
         playerColors.put(3, Color.PURPLE);
         playerColors.put(4, Color.ORANGE);
         
+        //each player gets a secondary color for contested tiles
         playerSecondaryColors.put(1, Color.LIGHTBLUE);
         playerSecondaryColors.put(2, Color.LIGHTGREEN);
         playerSecondaryColors.put(3, Color.LIGHTPINK);
@@ -127,6 +134,7 @@ public class PrimaryController {
         playerTiles.get(turn).addAll(map.getOwnedTiles());
         map.getOwnedTiles().clear();
         if(gameStarted == true) {
+            //when round is over, display which tiles each player owns
             if (turn == pc) {
                 textBox.clear();
                 for(Integer i : playerTiles.keySet()) {
