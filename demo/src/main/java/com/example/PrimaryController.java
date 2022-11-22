@@ -18,6 +18,8 @@ public class PrimaryController {
     private Button startButton;
     @FXML
     private Button resetButton;
+    @FXML
+    private Button rollButton;
     @FXML 
     private FlowPane mapBox;
     @FXML 
@@ -30,19 +32,22 @@ public class PrimaryController {
     private Label roundCount;
     @FXML 
     private Label playerCount;
+    @FXML 
+    private Label rollValue;
     @FXML
     ChoiceBox<Integer> playerCountChoice = new ChoiceBox<Integer>();
     
-    private HashMap<Integer, List<Tile>> playerTiles = new HashMap<Integer, List<Tile>>();
-    private HashMap<Integer, Color> playerColors = new HashMap<Integer, Color>();
-    private HashMap<Integer, Color> playerSecondaryColors = new HashMap<Integer, Color>();
+    private HashMap<Integer, List<Tile>> playerTiles = new HashMap<Integer, List<Tile>>(); //store list of owned tiles per player
+    private HashMap<Integer, Color> playerColors = new HashMap<Integer, Color>(); //store list of colors for each players
+    private HashMap<Integer, Color> playerSecondaryColors = new HashMap<Integer, Color>(); //store list of secondary colors for each players
     
     
     boolean gameStarted; //track game state
     private int round; //track round count
     private int turn; //track turn value
     private int pc; //track player count selection
-    private TileMap map;
+    private int playerRollValue; //track value of dice roll
+    private TileMap map; //tile map
     
     //create new maps with size and color
     public TileMap createNewMap(int size, Color col) {
@@ -61,14 +66,15 @@ public class PrimaryController {
         playerCountChoice.getItems().addAll(1,2,3,4);
         playerCountChoice.hide();
         mapBox.getChildren().clear();
+        
+        //clear all player owned tile lists
         for(List l : playerTiles.values()) {
             l.clear();
         }
+        
         playerTurn.setText(String.valueOf(turn));
         roundCount.setText(String.valueOf(round));
         playerCount.setText(null);
-        textBox.setWrapText(true);
-        textBox.setEditable(false);
         textBox.setText("Select amount of players, then press 'start game' to get started.");
     }
     
@@ -128,32 +134,45 @@ public class PrimaryController {
     }
     
     
-
+    
     @FXML
-    private void finishTurnButtonPress() throws IOException{
-        playerTiles.get(turn).addAll(map.getOwnedTiles());
-        map.getOwnedTiles().clear();
+    private void finishTurnButtonPress() throws IOException {
+
         if(gameStarted == true) {
-            //when round is over, display which tiles each player owns
+            //add current players tiles to their list for access
+            playerTiles.get(turn).addAll(map.getOwnedTiles());
+            
+            //display the roll value on each of that player's owned tiles for that turn
+            for(Tile t : map.getOwnedTiles()) {
+                t.text.setText(String.valueOf(playerRollValue));
+                t.value = playerRollValue;
+            }
+            
+            //if all players have completed their turn, go to next round
             if (turn == pc) {
                 textBox.clear();
-                for(Integer i : playerTiles.keySet()) {
-                    textBox.appendText("Player " + i + "'s tiles: ");
-                    for(Tile t : playerTiles.get(i)) {
-                        textBox.appendText(map.getTileCoordinates(t));
-                    }
-                    textBox.appendText("\n");
-                }
                 round++;
                 turn = 1;
             } else {
                 turn++;        
             }
+            
+            //reset values for next turn
+            map.getOwnedTiles().clear();//clear list for next player to add tiles to
+            playerRollValue = 0;
+            rollValue.setText(null);
             playerTurn.setText(String.valueOf(turn));
             roundCount.setText(String.valueOf(round));
-            textBox.appendText("\nIt is now player " + String.valueOf(turn) + "'s turn");
+            textBox.appendText("It is now player " + String.valueOf(turn) + "'s turn");
             map.playerColor = playerColors.get(turn);
             map.secondaryColor = playerSecondaryColors.get(turn);
         }
+    }
+    
+    //roll die, set value and display
+    @FXML 
+    private void rollDiceButtonPress() throws IOException{
+        playerRollValue = Dice.roll();
+        rollValue.setText(String.valueOf(playerRollValue));
     }
 }

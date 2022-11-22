@@ -5,25 +5,78 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.PrimaryController">
    <children>
       <Button fx:id="finishTurnButton" layoutX="469.0" layoutY="157.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#finishTurnButtonPress" prefHeight="30.0" prefWidth="100.0" text="Finish Turn" />
       <Pane prefHeight="150.0" prefWidth="600.0">
          <children>
-            <Button fx:id="resetButton" layoutX="38.0" layoutY="75.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#resetButtonPress" prefHeight="30.0" prefWidth="100.0" text="Reset Game" />
-            <Button fx:id="startButton" layoutX="38.0" layoutY="31.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#startButtonPress" prefHeight="30.0" prefWidth="100.0" text="Start Game" />
-            <TextArea fx:id="textBox" layoutX="160.0" layoutY="18.0" prefHeight="100.0" prefWidth="280.0" />
-            <Label layoutX="458.0" layoutY="22.0" minWidth="-Infinity" prefWidth="50.0" text="Round:" />
-            <Label layoutX="458.0" layoutY="54.0" minWidth="-Infinity" prefWidth="50.0" text="Turn:" />
-            <Label fx:id="roundCount" layoutX="517.0" layoutY="22.0" minWidth="-Infinity" prefWidth="40.0" text="roundCount" />
-            <Label fx:id="playerTurn" layoutX="517.0" layoutY="54.0" minWidth="-Infinity" prefWidth="40.0" text="playerTurn" />
-            <ChoiceBox fx:id="playerCountChoice" layoutX="458.0" layoutY="88.0" prefWidth="50.0" />
-            <Label fx:id="playerCount" layoutX="517.0" layoutY="92.0" minWidth="-Infinity" prefWidth="40.0" text="playerCount" />
+            <TextArea fx:id="textBox" editable="false" layoutX="130.0" layoutY="18.0" prefHeight="100.0" prefWidth="300.0" wrapText="true" />
+            <GridPane alignment="CENTER" layoutX="447.0" layoutY="18.0" prefHeight="100.0" prefWidth="133.0">
+              <columnConstraints>
+                <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" />
+                <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label minWidth="60.0" text="Round:">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="roundCount" prefWidth="70.0" text="roundCount" GridPane.columnIndex="1">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label minWidth="60.0" text="Turn:" GridPane.rowIndex="1">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="playerTurn" prefWidth="70.0" text="playerTurn" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <ChoiceBox fx:id="playerCountChoice" prefWidth="20.0" GridPane.rowIndex="2" />
+                  <Label fx:id="playerCount" prefWidth="70.0" text="playerCount" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+            </GridPane>
+            <VBox layoutX="14.0" layoutY="18.0" prefHeight="100.0" prefWidth="100.0" spacing="5.0">
+               <children>
+                  <Button fx:id="startButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#startButtonPress" prefHeight="30.0" prefWidth="100.0" text="Start Game" />
+                  <Button fx:id="resetButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#resetButtonPress" prefHeight="30.0" prefWidth="100.0" text="Reset Game" />
+                  <Button fx:id="AdminButton" layoutX="10.0" layoutY="40.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#resetButtonPress" prefHeight="30.0" prefWidth="100.0" text="Admin Menu" />
+               </children>
+            </VBox>
          </children>
       </Pane>
       <FlowPane fx:id="mapBox" alignment="CENTER" layoutX="150.0" layoutY="172.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="300.0" />
+      <VBox layoutX="14.0" layoutY="300.0" spacing="5.0">
+         <children>
+            <Label fx:id="rollValue" alignment="CENTER" minWidth="-Infinity" prefWidth="40.0" text="val">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <Button fx:id="rollButton" mnemonicParsing="false" onAction="#rollDiceButtonPress" text="Roll" />
+         </children>
+      </VBox>
    </children>
 </AnchorPane>
