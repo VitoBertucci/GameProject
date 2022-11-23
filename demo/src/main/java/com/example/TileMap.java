@@ -9,19 +9,21 @@ import javafx.scene.text.Text;
 
 public class TileMap extends Pane {
     private static int size = 30; //length of one side of rectangle tile (i.e. h x w)
-    private List<List<Tile>> tileList = new ArrayList<List<Tile>>(); //list used to store all tiles to access later
+    public List<List<Tile>> tileList = new ArrayList<List<Tile>>(); //list used to store all tiles to access later
     List<Tile> ownedTiles = new ArrayList<Tile>(); //list containing the tile that were clicked on in a turn
-    private boolean editable = false; //track if a tile is clickable
     public Color playerColor = Color.BLACK; //color of owned territories by the current player
     public Color secondaryColor = Color.BLACK; //color of contested territories by the current player
+    public int playerNumber; //the integer value of the current turn
+    public Tile selectedTile; 
+    public Tile targetTile;
     
     //Tile class
     public class Tile extends Rectangle {
-    public boolean owned = false; //track if tile is owned already
-    public boolean contested = false; //track if tile is contested already
-    public Text text = new Text(" "); //text for tile values
-    public int value; //value of the tile (from above text)
-    public StackPane p = new StackPane(); //pane for tile shape and text
+        public int owned; //track if tile is owned already
+        public Text text = new Text(" "); //text for tile values
+        public int value; //value of the tile (from above text)
+        public StackPane p = new StackPane(); //pane for tile shape and text
+        public boolean clicked = false;
        
         //constructor
         Tile(double x, double y) {
@@ -41,19 +43,36 @@ public class TileMap extends Pane {
             
             //when tile is clicked, change to red, when clicked again change to beige
             setOnMouseClicked(e -> {
-                if(editable == true) {
-                    if(owned == false) {
-                        owned = true;
-                        ownedTiles.add(this);
-                        setFill(playerColor);
-                        fillNeighbors(this);
+                if(playerNumber == owned) {
+                    if(clicked == false) {
+                        selectedTile = this;
+                        for(Tile t : getNeighbors(this)) {
+                            if (t.owned != playerNumber){
+                                t.setStroke(Color.YELLOW);
+                            }
+                            
+                        }
+                        clicked = true;                  
+                    } else {
+                        for(Tile t : getNeighbors(this)) {
+                            t.setStroke(Color.BLACK);
+                        }
+                        selectedTile = null;
+                        clicked = false;
                     }
+                } else if (getNeighbors(selectedTile).contains(this) && owned != playerNumber && selectedTile != null) {
+                    targetTile = this;
+                    for(Tile t : getNeighbors(selectedTile)) {
+                        t.setStroke(Color.BLACK);
+                    }
+                    targetTile.setStroke(Color.RED);
+                    selectedTile.setStroke(Color.YELLOW);
                 }
             });
-            
+        
             //set mouse entered and exited for the hover over effect
             setOnMouseEntered(e -> {
-                if(owned == false) {
+                if((playerNumber == owned && selectedTile == null) || (getNeighbors(selectedTile).contains(this) && owned != playerNumber && selectedTile != null)) {
                     setCursor(Cursor.HAND);
                 }
             });
@@ -95,23 +114,41 @@ public class TileMap extends Pane {
         return ownedTiles;
     }
     
-    //set if a tile map be editable 
-    public void setEditable(boolean b) {
-        editable = b;
-    }
-    
     //fill neighbors of a tile with secondary color only if they are in bounds of map
-    public void fillNeighbors(Tile t) {
-        for(int i=-1; i<=1; i++) {
-            if(((int)t.getProperties().get("x"))+i >= 0 && ((int)t.getProperties().get("x"))+i <= tileList.size()-1) {
+    public List<Tile> getNeighbors(Tile t) {
+        
+        List<Tile> neighbors = new ArrayList<Tile>();
+        int xCoordinate = (int)t.getProperties().get("x");
+        int yCoordinate = (int)t.getProperties().get("y");
+        
+        for(int i = -1; i <= 1; i++) {
+            if(xCoordinate + i >= 0 && xCoordinate + i <= tileList.size()-1) {
                 for(int j=-1; j<=1; j++) {
-                    if(((int)t.getProperties().get("y"))+j >= 0 && ((int)t.getProperties().get("y"))+j <= tileList.size()-1) {
-                        if(tileList.get((int) t.getProperties().get("x") + i).get((int) t.getProperties().get("y") + j).owned != true)
-                        tileList.get((int) t.getProperties().get("x") + i).get((int) t.getProperties().get("y") + j).setFill(secondaryColor);
-                        tileList.get((int) t.getProperties().get("x") + i).get((int) t.getProperties().get("y") + j).contested = true;
+                    if(yCoordinate + j >= 0 && yCoordinate + j <= tileList.size()-1 && (tileList.get(xCoordinate + i).get(yCoordinate + j) != t)) {
+                        neighbors.add((tileList.get(xCoordinate + i).get(yCoordinate + j)));
                     }
                 }
             }
         }
+        return neighbors;
+        // int xCoordinate = (int)t.getProperties().get("x");
+        // int yCoordinate = (int)t.getProperties().get("y");
+        // if ((xCoordinate - 1 ) >= 0){
+        //     tileList.get(xCoordinate - 1).get(yCoordinate).setFill(Color.LIGHTGRAY);
+        // }
+        // if ((xCoordinate + 1 ) <= tileList.size() - 1){
+        //     tileList.get(xCoordinate + 1).get(yCoordinate).setFill(Color.LIGHTGRAY);
+        // }
+        // if ((yCoordinate - 1 ) >= 0){
+        //     tileList.get(xCoordinate).get(yCoordinate - 1).setFill(Color.LIGHTGRAY);
+        // }
+        // if ((yCoordinate + 1 ) >= tileList.size() -1){
+        //     tileList.get(xCoordinate).get(yCoordinate + 1).setFill(Color.LIGHTGRAY);
+        // }
     }
 }
+
+// click on one of your items first
+// all of your other items become ineditable
+// must click on a neighbor
+

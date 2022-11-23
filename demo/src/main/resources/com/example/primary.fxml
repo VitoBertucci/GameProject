@@ -68,15 +68,40 @@
          </children>
       </Pane>
       <FlowPane fx:id="mapBox" alignment="CENTER" layoutX="150.0" layoutY="172.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="300.0" />
-      <VBox layoutX="14.0" layoutY="300.0" spacing="5.0">
+      <VBox layoutX="14.0" layoutY="300.0" spacing="5.0" />
+      <VBox layoutX="59.0" layoutY="300.0" spacing="5.0" />
+      <Button fx:id="rollButton" layoutX="32.0" layoutY="345.0" mnemonicParsing="false" onAction="#rollDiceButtonPress" text="Roll" />
+      <GridPane alignment="CENTER" layoutX="-7.0" layoutY="300.0" prefHeight="44.0" prefWidth="133.0">
+         <columnConstraints>
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints maxHeight="46.0" minHeight="10.0" prefHeight="26.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="75.0" minHeight="10.0" prefHeight="18.0" vgrow="SOMETIMES" />
+         </rowConstraints>
          <children>
-            <Label fx:id="rollValue" alignment="CENTER" minWidth="-Infinity" prefWidth="40.0" text="val">
+            <Label fx:id="attackRollLabel" alignment="CENTER" minWidth="-Infinity" prefWidth="40.0" text="val">
                <font>
                   <Font size="16.0" />
                </font>
             </Label>
-            <Button fx:id="rollButton" mnemonicParsing="false" onAction="#rollDiceButtonPress" text="Roll" />
+            <Label fx:id="defendRollLabel" alignment="CENTER" minWidth="-Infinity" prefWidth="40.0" text="val" GridPane.columnIndex="1">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" minWidth="-Infinity" prefWidth="50.0" text="Attack" GridPane.rowIndex="1">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" minWidth="-Infinity" prefWidth="50.0" text="Defend" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
          </children>
-      </VBox>
+      </GridPane>
    </children>
 </AnchorPane>

@@ -1,8 +1,12 @@
 package com.example;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
+
 import com.example.TileMap.Tile;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -33,7 +37,9 @@ public class PrimaryController {
     @FXML 
     private Label playerCount;
     @FXML 
-    private Label rollValue;
+    private Label attackRollLabel;
+    @FXML
+    private Label defendRollLabel;
     @FXML
     ChoiceBox<Integer> playerCountChoice = new ChoiceBox<Integer>();
     
@@ -46,7 +52,8 @@ public class PrimaryController {
     private int round; //track round count
     private int turn; //track turn value
     private int pc; //track player count selection
-    private int playerRollValue; //track value of dice roll
+    private int attackRollValue; //track value of dice roll
+    private int defendRollValue; //track value of dice roll
     private TileMap map; //tile map
     
     //create new maps with size and color
@@ -76,6 +83,7 @@ public class PrimaryController {
         roundCount.setText(String.valueOf(round));
         playerCount.setText(null);
         textBox.setText("Select amount of players, then press 'start game' to get started.");
+        //rollButton.setVisible(false);
     }
     
     @FXML 
@@ -107,7 +115,7 @@ public class PrimaryController {
     }
     
     @FXML
-    private void startButtonPress() throws IOException {
+    private void startButtonPress() throws Exception {
         if (playerCountChoice.getValue() == null) {
             textBox.setText("Select player count and then press 'Start Game'");
         } else {
@@ -120,7 +128,8 @@ public class PrimaryController {
             map = new TileMap(10, Color.BEIGE);
             map.playerColor = playerColors.get(turn);
             map.secondaryColor = playerSecondaryColors.get(turn);
-            map.setEditable(true);
+            map.playerNumber = turn;
+            
             mapBox.getChildren().add(map);
             
             playerTurn.setText(String.valueOf(turn));
@@ -130,6 +139,7 @@ public class PrimaryController {
             startButton.setVisible(false);
             
             textBox.setText("Game has started. It is now player " + String.valueOf(turn) + "'s turn");
+            distributeTerritories();
         }
     }
     
@@ -137,16 +147,8 @@ public class PrimaryController {
     
     @FXML
     private void finishTurnButtonPress() throws IOException {
-
+        
         if(gameStarted == true) {
-            //add current players tiles to their list for access
-            playerTiles.get(turn).addAll(map.getOwnedTiles());
-            
-            //display the roll value on each of that player's owned tiles for that turn
-            for(Tile t : map.getOwnedTiles()) {
-                t.text.setText(String.valueOf(playerRollValue));
-                t.value = playerRollValue;
-            }
             
             //if all players have completed their turn, go to next round
             if (turn == pc) {
@@ -154,13 +156,16 @@ public class PrimaryController {
                 round++;
                 turn = 1;
             } else {
-                turn++;        
+                turn++;       
             }
             
             //reset values for next turn
+            map.playerNumber = turn;
             map.getOwnedTiles().clear();//clear list for next player to add tiles to
-            playerRollValue = 0;
-            rollValue.setText(null);
+            attackRollValue = 0;
+            defendRollValue = 0;
+            //attackRollLabel.setText(null);
+            //defendRollLabel.setText(null);
             playerTurn.setText(String.valueOf(turn));
             roundCount.setText(String.valueOf(round));
             textBox.appendText("It is now player " + String.valueOf(turn) + "'s turn");
@@ -172,7 +177,48 @@ public class PrimaryController {
     //roll die, set value and display
     @FXML 
     private void rollDiceButtonPress() throws IOException{
-        playerRollValue = Dice.roll();
-        rollValue.setText(String.valueOf(playerRollValue));
+        if(map.selectedTile != null && map.targetTile != null) {
+            
+            attackRollValue = Dice.roll();
+            defendRollValue = Dice.roll();
+            
+            attackRollLabel.setText(String.valueOf(attackRollValue));
+            defendRollLabel.setText(String.valueOf(defendRollValue));
+
+            if (attackRollValue > defendRollValue) {
+                map.targetTile.setFill(playerColors.get(turn));
+                map.targetTile.owned = turn;
+                map.targetTile.setStroke(Color.BLACK);
+                map.selectedTile.setStroke(Color.BLACK);
+            }
+        }
+    }
+    
+    @FXML 
+    private void distributeTerritories() throws IOException {
+        
+        List<Integer> nums = new ArrayList<Integer>();
+        int curPlayer = 1;
+        int y = 0;
+        for(int i = 0; i < 10; i++) {
+            nums.addAll(Arrays.asList(0,1,2,3,4,5,6,7,8,9));
+            
+            while (!(nums.isEmpty())) {
+                if(curPlayer > pc) {
+                    curPlayer = 1;
+                }
+                Collections.shuffle(nums);
+                
+                playerTiles.get(curPlayer).add(map.tileList.get(i).get(y));
+                
+                map.tileList.get(i).get(nums.get(y)).setFill(playerColors.get(curPlayer));
+                map.tileList.get(i).get(nums.remove(y)).owned = curPlayer;
+                
+
+                curPlayer++;
+                
+            }
+            
+        }
     }
 }
